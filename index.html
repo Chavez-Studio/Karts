@@ -19,8 +19,8 @@
     <link rel="icon" sizes="192x192" href="https://cdn-icons-png.flaticon.com/512/3796/3796050.png">
     <link rel="icon" sizes="512x512" href="https://cdn-icons-png.flaticon.com/512/3796/3796050.png">
 
-    <!-- Manifest para Android -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Karts","short_name":"Karts","description":"Karts 2026","start_url":".","display":"standalone","background_color":"#F8F9FA","theme_color":"#0A3161","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3796/3796050.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"https://cdn-icons-png.flaticon.com/512/3796/3796050.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
+    <!-- Manifest para Android (Corregido a Base64 para evitar errores de sintaxis) -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiS2FydHMiLCJzaG9ydF9uYW1lIjoiS2FydHMiLCJkZXNjcmlwdGlvbiI6IkthcnRzIDIwMjYiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y4RjlGQSIsInRoZW1lX2NvbG9yIjoiIzBBMzE2MSIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zNzk2LzM3OTYwNTAucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifSx7InNyYyI6Imh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzM3OTYvMzc5NjA1MC5wbmciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=">
 
     <style>
         /* Quitamos márgenes y hacemos que el iFrame ocupe toda la pantalla */
@@ -40,7 +40,7 @@
     </style>
 </head>
 <body>
-    <!-- REEMPLAZA ESTE LINK POR TU LINK DE GOOGLE APPS SCRIPT -->
+    <!-- REEMPLAZA ESTE LINK POR TU NUEVO LINK DE GOOGLE APPS SCRIPT LUEGO DE DARLE ACCESO A "CUALQUIERA" -->
     <iframe src="https://script.google.com/macros/s/AKfycbyDzMcdYNtRfMrIF05DM737LT_Yrnpe3Dvn_FgQStZJkbaxPbMMiCqwQBn9mmJmvnKaoQ/exec" allow="autoplay; fullscreen"></iframe>
 </body>
 </html>
