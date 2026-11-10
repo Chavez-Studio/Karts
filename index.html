@@ -5,42 +5,312 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Karts</title>
     
-    <!-- Metadatos de Color -->
+    <!-- Metadatos de Color y PWA -->
     <meta name="theme-color" content="#0A3161">
-    
-    <!-- iOS Apple -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Karts">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3796/3796050.png">
-
-    <!-- Android / Chrome -->
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="icon" sizes="192x192" href="https://cdn-icons-png.flaticon.com/512/3796/3796050.png">
     <link rel="icon" sizes="512x512" href="https://cdn-icons-png.flaticon.com/512/3796/3796050.png">
-
-    <!-- Manifest para Android (Corregido a Base64 para evitar errores de sintaxis) -->
+    
+    <!-- Manifest en Base64 -->
     <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiS2FydHMiLCJzaG9ydF9uYW1lIjoiS2FydHMiLCJkZXNjcmlwdGlvbiI6IkthcnRzIDIwMjYiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y4RjlGQSIsInRoZW1lX2NvbG9yIjoiIzBBMzE2MSIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8zNzk2LzM3OTYwNTAucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifSx7InNyYyI6Imh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzM3OTYvMzc5NjA1MC5wbmciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=">
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Quitamos márgenes y hacemos que el iFrame ocupe toda la pantalla */
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            height: 100%; 
-            overflow: hidden; 
-            background-color: #0A3161; 
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
         }
-        iframe { 
-            width: 100%; 
-            height: 100%; 
-            border: none; 
-            display: block;
+        .nav-active { color: #3b82f6; }
+        .nav-inactive { color: #64748b; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body>
-    <!-- REEMPLAZA ESTE LINK POR TU NUEVO LINK DE GOOGLE APPS SCRIPT LUEGO DE DARLE ACCESO A "CUALQUIERA" -->
-    <iframe src="https://script.google.com/macros/s/AKfycbyDzMcdYNtRfMrIF05DM737LT_Yrnpe3Dvn_FgQStZJkbaxPbMMiCqwQBn9mmJmvnKaoQ/exec" allow="autoplay; fullscreen"></iframe>
+<body class="bg-slate-900 text-slate-200 min-h-screen flex flex-col">
+
+    <!-- Header Fijo Superior -->
+    <header class="sticky top-0 z-40 bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 px-4 py-3 shadow-md">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-bold text-white leading-tight">🏁 Karting Tiempos</h1>
+                <p class="text-[10px] text-slate-400">9 de Noviembre, 2026</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-700 px-2 py-1 rounded-md text-right">
+                <span class="block text-[8px] text-slate-400 uppercase tracking-widest">Mejor Récord</span>
+                <span class="text-sm font-bold text-emerald-400">24.962s (JUL)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Área de Contenido Principal -->
+    <main class="flex-1 w-full pb-20 pt-2 px-3 overflow-x-hidden">
+        
+        <!-- TOP 50 Section -->
+        <section id="sec-top50" class="fade-in block">
+            <div class="mb-2 px-1 flex justify-between items-end">
+                <h2 class="text-sm font-semibold text-slate-300">Top 50 Clasificación</h2>
+            </div>
+            <div class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-lg" id="top50-list">
+                <!-- Inyectado por JS -->
+            </div>
+        </section>
+
+        <!-- POR PILOTO Section -->
+        <section id="sec-pilotos" class="fade-in hidden">
+            <div class="mb-2 px-1">
+                <h2 class="text-sm font-semibold text-slate-300">Desempeño por Piloto</h2>
+            </div>
+            <div class="flex flex-col gap-4" id="pilotos-container">
+                <!-- Inyectado por JS -->
+            </div>
+        </section>
+
+        <!-- PODIO Section -->
+        <section id="sec-podio" class="fade-in hidden">
+            <div class="mb-4 px-1">
+                <h2 class="text-sm font-semibold text-yellow-400 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    Podio - Mejor Tiempo por Piloto
+                </h2>
+            </div>
+            <div class="flex flex-col" id="podio-list">
+                <!-- Inyectado por JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Navegación Inferior -->
+    <nav class="fixed bottom-0 w-full bg-slate-900 border-t border-slate-800 pb-safe z-50">
+        <div class="flex justify-around items-center h-16">
+            <button onclick="switchTab('top50')" id="tab-top50" class="nav-active flex flex-col items-center justify-center w-full h-full transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span class="text-[10px] font-medium">Top 50</span>
+            </button>
+            <button onclick="switchTab('pilotos')" id="tab-pilotos" class="nav-inactive flex flex-col items-center justify-center w-full h-full transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <span class="text-[10px] font-medium">Pilotos</span>
+            </button>
+            <button onclick="switchTab('podio')" id="tab-podio" class="nav-inactive flex flex-col items-center justify-center w-full h-full transition-colors">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                <span class="text-[10px] font-medium">Podio</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Logic -->
+    <script>
+        const top50Data = [
+            { pos: 1, time: '20:10h', name: 'JULIO', lap: 1, lapTime: 24.962 },
+            { pos: 2, time: '20:10h', name: 'JULIO', lap: 8, lapTime: 25.037 },
+            { pos: 3, time: '20:10h', name: 'JULIO', lap: 5, lapTime: 25.061 },
+            { pos: 4, time: '20:00h', name: 'JULIO', lap: 11, lapTime: 25.153 },
+            { pos: 5, time: '20:10h', name: 'JULIO', lap: 12, lapTime: 25.334 },
+            { pos: 6, time: '20:00h', name: 'JULIO', lap: 14, lapTime: 25.337 },
+            { pos: 7, time: '20:10h', name: 'JULIO', lap: 10, lapTime: 25.345 },
+            { pos: 8, time: '20:10h', name: 'JULIO', lap: 14, lapTime: 25.361 },
+            { pos: 9, time: '20:00h', name: 'JULIO', lap: 10, lapTime: 25.434 },
+            { pos: 10, time: '20:00h', name: 'SEBAS', lap: 7, lapTime: 25.447 },
+            { pos: 11, time: '20:00h', name: 'JULIO', lap: 9, lapTime: 25.477 },
+            { pos: 12, time: '20:10h', name: 'JULIO', lap: 9, lapTime: 25.487 },
+            { pos: 13, time: '20:00h', name: 'SEBAS', lap: 10, lapTime: 25.504 },
+            { pos: 14, time: '20:10h', name: 'SEBAS', lap: 4, lapTime: 25.510 },
+            { pos: 15, time: '20:00h', name: 'JULIO', lap: 8, lapTime: 25.541 },
+            { pos: 16, time: '20:00h', name: 'EMANU', lap: 13, lapTime: 25.639 },
+            { pos: 17, time: '20:00h', name: 'SEBAS', lap: 8, lapTime: 25.661 },
+            { pos: 18, time: '20:00h', name: 'JULIO', lap: 12, lapTime: 25.670 },
+            { pos: 19, time: '20:10h', name: 'SEBAS', lap: 1, lapTime: 25.676 },
+            { pos: 20, time: '20:10h', name: 'JULIO', lap: 7, lapTime: 25.699 },
+            { pos: 21, time: '19:10h', name: 'JULIO', lap: 2, lapTime: 25.746 },
+            { pos: 22, time: '20:00h', name: 'SHARO', lap: 13, lapTime: 25.766 },
+            { pos: 23, time: '20:00h', name: 'JULIO', lap: 5, lapTime: 25.782 },
+            { pos: 24, time: '20:00h', name: 'JULIO', lap: 6, lapTime: 25.785 },
+            { pos: 25, time: '19:10h', name: 'SEBAS', lap: 10, lapTime: 25.822 },
+            { pos: 26, time: '20:00h', name: 'SEBAS', lap: 5, lapTime: 25.841 },
+            { pos: 27, time: '20:00h', name: 'SEBAS', lap: 14, lapTime: 25.842 },
+            { pos: 28, time: '20:00h', name: 'SHARO', lap: 9, lapTime: 25.850 },
+            { pos: 29, time: '20:10h', name: 'JULIO', lap: 2, lapTime: 25.856 },
+            { pos: 30, time: '20:00h', name: 'EMANU', lap: 9, lapTime: 25.860 },
+            { pos: 31, time: '20:10h', name: 'YUKA', lap: 6, lapTime: 25.862 },
+            { pos: 32, time: '20:10h', name: 'EMANU', lap: 1, lapTime: 25.868 },
+            { pos: 33, time: '20:10h', name: 'SEBAS', lap: 13, lapTime: 25.870 },
+            { pos: 34, time: '20:10h', name: 'SEBAS', lap: 6, lapTime: 25.876 },
+            { pos: 35, time: '20:00h', name: 'SEBAS', lap: 9, lapTime: 25.910 },
+            { pos: 36, time: '20:00h', name: 'SEBAS', lap: 6, lapTime: 25.936 },
+            { pos: 37, time: '20:10h', name: 'SHARO', lap: 5, lapTime: 25.950 },
+            { pos: 38, time: '20:00h', name: 'SEBAS', lap: 4, lapTime: 25.953 },
+            { pos: 39, time: '20:00h', name: 'YUKA', lap: 7, lapTime: 25.971 },
+            { pos: 40, time: '20:10h', name: 'SEBAS', lap: 2, lapTime: 25.982 },
+            { pos: 41, time: '20:10h', name: 'EMANU', lap: 8, lapTime: 26.031 },
+            { pos: 42, time: '20:00h', name: 'YUKA', lap: 8, lapTime: 26.032 },
+            { pos: 43, time: '19:10h', name: 'JULIO', lap: 10, lapTime: 26.062 },
+            { pos: 44, time: '20:10h', name: 'SHARO', lap: 7, lapTime: 26.080 },
+            { pos: 45, time: '20:10h', name: 'SEBAS', lap: 11, lapTime: 26.102 },
+            { pos: 46, time: '20:10h', name: 'SEBAS', lap: 5, lapTime: 26.108 },
+            { pos: 47, time: '20:10h', name: 'SHARO', lap: 3, lapTime: 26.125 },
+            { pos: 48, time: '20:10h', name: 'SEBAS', lap: 3, lapTime: 26.127 },
+            { pos: 49, time: '20:10h', name: 'JULIO', lap: 6, lapTime: 26.138 },
+            { pos: 50, time: '20:00h', name: 'JULIO', lap: 7, lapTime: 26.147 }
+        ];
+
+        const pilotData = {
+            'JULIO': [24.962, 25.037, 25.061, 25.153, 25.334, 25.337, 25.345, 25.361, 25.434, 25.477, 25.487, 25.541, 25.670, 25.699, 25.746, 25.782, 25.785, 25.856, 26.062, 26.138, 26.147, 26.190, 26.221, 26.285, 26.386, 26.530, 26.578, 26.671, 26.806, 26.899, 27.024, 27.082, 27.175, 27.283, 27.452, 27.571, 27.674, 27.714, 27.789, 27.838, 27.939, 28.080, 28.085, 28.085, 28.132, 28.348, 28.669, 29.136, 29.593, 29.883, 30.148, 33.976, 39.139, 48.968, 67.694],
+            'SEBAS': [25.447, 25.504, 25.510, 25.661, 25.676, 25.822, 25.841, 25.842, 25.870, 25.876, 25.910, 25.936, 25.953, 25.982, 26.102, 26.108, 26.127, 26.184, 26.272, 26.282, 26.317, 26.342, 26.381, 26.556, 26.623, 26.727, 26.737, 26.754, 26.772, 26.883, 26.939, 26.954, 27.112, 27.258, 27.332, 27.422, 27.755, 27.863, 27.865, 27.913, 28.004, 28.227, 28.319, 28.572, 28.588, 29.036, 29.342, 30.269, 30.285, 30.419, 30.654, 30.853, 35.457, 85.041],
+            'EMANU': [25.639, 25.860, 25.868, 26.031, 26.267, 26.278, 26.337, 26.457, 26.460, 26.506, 26.529, 26.539, 26.609, 26.636, 26.675, 26.701, 26.857, 26.909, 26.916, 27.022, 27.207, 27.237, 27.302, 27.398, 27.478, 27.535, 27.538, 27.747, 27.851, 27.857, 27.923, 27.987, 28.208, 28.313, 28.406, 29.230, 29.231, 30.467, 30.519, 30.630, 30.867, 31.543, 31.621, 34.608, 35.417, 39.675, 42.333, 56.223, 58.969, 70.806],
+            'SHARO': [25.766, 25.850, 25.950, 26.080, 26.125, 26.437, 26.484, 26.512, 26.614, 26.645, 27.134, 27.190, 27.244, 27.260, 27.269, 27.323, 27.377, 27.489, 27.538, 27.555, 27.632, 27.678, 27.789, 27.860, 27.886, 27.895, 27.905, 27.917, 27.936, 28.175, 28.190, 28.349, 28.453, 28.497, 28.515, 28.609, 28.661, 28.752, 28.831, 29.071, 29.203, 29.743, 29.894, 29.971, 30.096, 31.530, 31.789, 33.295, 36.655, 40.540, 66.367],
+            'YUKA': [25.862, 25.971, 26.032, 26.206, 26.319, 26.362, 26.368, 26.385, 26.534, 26.597, 26.607, 26.716, 26.859, 27.099, 27.204, 27.247, 27.339, 27.379, 27.470, 27.499, 27.587, 27.655, 27.844, 27.995, 28.009, 28.036, 28.180, 28.200, 28.301, 28.379, 28.381, 28.427, 28.439, 28.505, 28.627, 28.632, 28.747, 28.787, 28.902, 28.966, 28.966, 29.262, 29.588, 30.253, 30.386, 30.610, 32.094, 32.378, 34.405, 38.563, 55.100, 64.843],
+            'SOFIA': [26.709, 26.817, 27.086, 27.248, 27.338, 27.373, 27.481, 27.490, 27.505, 27.555, 27.560, 27.599, 27.814, 27.853, 27.970, 27.982, 28.069, 28.091, 28.153, 28.162, 28.325, 28.348, 28.401, 28.563, 28.570, 28.604, 28.697, 28.765, 28.768, 28.781, 28.870, 28.980, 28.998, 29.032, 29.045, 29.068, 29.170, 29.214, 29.383, 29.438, 29.560, 29.573, 29.788, 30.427, 31.370, 32.543, 32.604, 34.201, 38.534, 48.959, 61.183],
+            'NAHOM': [27.478, 27.517, 27.745, 27.863, 27.888, 27.937, 27.937, 27.984, 28.105, 28.118, 28.150, 28.206, 28.426, 28.533, 28.542, 28.576, 28.601, 28.612, 28.617, 28.723, 28.789, 28.799, 28.832, 28.955, 28.994, 29.142, 29.146, 29.150, 29.168, 29.171, 29.283, 29.377, 29.427, 29.437, 29.639, 29.729, 29.823, 29.919, 30.005, 30.158, 32.433, 34.531, 34.539, 35.784, 41.602, 52.028, 54.957, 89.531]
+        };
+
+        function renderTop50() {
+            const list = document.getElementById('top50-list');
+            list.innerHTML = '';
+            
+            top50Data.forEach((row, index) => {
+                let posColor = "text-slate-400 font-medium";
+                let bgHsl = "bg-transparent";
+                if(row.pos === 1) { posColor = "text-yellow-400 font-bold text-lg"; bgHsl="bg-yellow-900/10"; }
+                else if(row.pos === 2) { posColor = "text-slate-300 font-bold text-lg"; bgHsl="bg-slate-700/30"; }
+                else if(row.pos === 3) { posColor = "text-amber-600 font-bold text-lg"; bgHsl="bg-amber-900/10"; }
+
+                const borderB = index !== top50Data.length - 1 ? 'border-b border-slate-700/50' : '';
+
+                const item = document.createElement('div');
+                item.className = `flex justify-between items-center p-3 ${borderB} ${bgHsl} active:bg-slate-700 transition-colors`;
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 text-center ${posColor}">${row.pos}</div>
+                        <div>
+                            <div class="font-bold text-slate-200 text-sm leading-tight">${row.name}</div>
+                            <div class="text-[10px] text-slate-500 mt-0.5">V:${row.lap} • ${row.time}</div>
+                        </div>
+                    </div>
+                    <div class="font-mono text-emerald-400 font-semibold text-sm">
+                        ${row.lapTime.toFixed(3)}s
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function renderPilots() {
+            const container = document.getElementById('pilotos-container');
+            container.innerHTML = '';
+
+            for (const [name, times] of Object.entries(pilotData)) {
+                const best = Math.min(...times).toFixed(3);
+                
+                const card = document.createElement('div');
+                card.className = "bg-slate-800 rounded-xl border border-slate-700 overflow-hidden shadow-sm";
+                
+                const timesList = times.map((t, i) => `
+                    <div class="flex justify-between items-center py-1.5 px-3 text-sm ${i !== times.length-1 ? 'border-b border-slate-700/50' : ''}">
+                        <span class="text-slate-500 text-xs w-8">V${i+1}</span>
+                        <span class="font-mono ${t == best ? 'text-yellow-400 font-bold' : 'text-slate-300'}">${t.toFixed(3)}</span>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="p-3 bg-slate-700/40 border-b border-slate-700 flex justify-between items-center">
+                        <h3 class="font-bold text-white">${name}</h3>
+                        <div class="flex gap-2 text-xs text-right">
+                            <span class="bg-emerald-900/30 text-emerald-400 px-2 py-0.5 rounded font-mono font-semibold">${best}s</span>
+                            <span class="bg-blue-900/30 text-blue-400 px-2 py-0.5 rounded font-semibold">${times.length}v</span>
+                        </div>
+                    </div>
+                    <div class="h-40 overflow-y-auto no-scrollbar bg-slate-800/80">
+                        ${timesList}
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function renderPodio() {
+            const list = document.getElementById('podio-list');
+            list.innerHTML = '';
+            
+            const podioData = [];
+            for (const [name, times] of Object.entries(pilotData)) {
+                const best = Math.min(...times);
+                podioData.push({ name, best });
+            }
+            
+            podioData.sort((a, b) => a.best - b.best);
+            
+            podioData.forEach((row, index) => {
+                const pos = index + 1;
+                let posColor = "text-slate-400 font-medium";
+                let bgHsl = "bg-slate-800 border-transparent";
+                let icon = "";
+                
+                if(pos === 1) { 
+                    posColor = "text-yellow-400 font-bold text-xl"; 
+                    bgHsl = "bg-yellow-900/20 border border-yellow-700/50"; 
+                    icon = "🏆"; 
+                } else if(pos === 2) { 
+                    posColor = "text-slate-300 font-bold text-lg"; 
+                    bgHsl = "bg-slate-700/40 border border-slate-600/50"; 
+                    icon = "🥈"; 
+                } else if(pos === 3) { 
+                    posColor = "text-amber-600 font-bold text-lg"; 
+                    bgHsl = "bg-amber-900/20 border border-amber-700/50"; 
+                    icon = "🥉"; 
+                }
+
+                const mb = index !== podioData.length - 1 ? 'mb-3' : '';
+
+                const item = document.createElement('div');
+                item.className = `flex justify-between items-center p-4 rounded-xl shadow-sm ${bgHsl} ${mb}`;
+                item.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-8 text-center ${posColor}">${icon || pos}</div>
+                        <div class="font-bold text-slate-200 text-base tracking-wide">${row.name}</div>
+                    </div>
+                    <div class="font-mono text-emerald-400 font-bold text-base bg-emerald-900/20 px-3 py-1 rounded-md">
+                        ${row.best.toFixed(3)}s
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function switchTab(tabId) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('sec-top50').classList.add('hidden');
+            document.getElementById('sec-pilotos').classList.add('hidden');
+            document.getElementById('sec-podio').classList.add('hidden');
+            
+            const tabs = ['top50', 'pilotos', 'podio'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                el.classList.remove('nav-active');
+                el.classList.add('nav-inactive');
+            });
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('nav-inactive');
+            activeBtn.classList.add('nav-active');
+        }
+
+        window.onload = () => {
+            renderTop50();
+            renderPilots();
+            renderPodio();
+        };
+    </script>
 </body>
 </html>
